@@ -66,6 +66,15 @@ class VehiclesRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getEnergy()
+    {
+        return $this->createQueryBuilder('v')
+            ->select('v.energy')
+            ->distinct()
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getMaxPrice()
     {
         return $this->createQueryBuilder('v')

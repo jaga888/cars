@@ -5,7 +5,7 @@
         <div class="page-wrapper">
             <div class="panel">
                 <h3 class="panel__title">FILTRER MA RECHERCHE</h3>
-                <form action="" method="post" id="add-filter" class="panel__form">
+                <form action="/" method="get" id="add-filter" class="panel__form">
                     <input type="hidden" id="max-price" value="{{ maxPrice }}">
                     <input type="hidden" id="min-price" value="{{ minPrice }}">
                     <input type="hidden" id="max-price-monthly" value="{{ maxPriceMonthly }}">
@@ -39,37 +39,30 @@
                     <div class="filter-choise">
                         <div class="filter-title">Marque</div>
                         <div class="filter-wrapper">
-                            {% for brand in brands %}
-                                <input type="checkbox" name="brand" class="radio" id="brand-{{ brand.brand }}"/>
-                                <label for="brand-{{ brand.brand }}">{{ brand.brand }}</label> <br>
+                            {% for vehicle in brands %}
+                                <input type="checkbox" name="brands[]" class="radio" id="brand-{{ vehicle.brand }}"
+                                       value="{{ vehicle.brand }}"/>
+                                <label for="brand-{{ vehicle.brand }}">{{ vehicle.brand }}</label> <br>
                             {% endfor %}
                         </div>
                     </div>
                     <div class="filter-choise">
-                        <div class="filter-title">Type de véhicule</div>
+                        <div class="filter-title">Énergie</div>
                         <div class="filter-wrapper">
-                            <input type="radio" class="radio" id="type-tous" checked/>
-                            <label for="type-tous">Tous</label> <br>
-                            <input type="radio" class="radio" id="type-citadine"/>
-                            <label for="type-citadine">Citadine</label> <br>
-                            <input type="radio" class="radio" id="type-berline"/>
-                            <label for="type-berline">Berline</label><br>
-                            <input type="radio" class="radio" id="type-break"/>
-                            <label for="type-break">Break</label><br>
-                            <input type="radio" class="radio" id="type-suv"/>
-                            <label for="type-suv">SUV / 4x4</label> <br>
-                            <input type="radio" class="radio" id="type-mono"/>
-                            <label for="type-mono">Monospace / Ludospace</label><br>
-                            <input type="radio" class="radio" id="type-coupe"/>
-                            <label for="type-coupe">Coupé / Cabriolet</label><br>
+                            {% for vehicle in energies %}
+                                <input type="checkbox" name="energies[]" class="radio" id="energy-{{ vehicle.energy }}"
+                                       value="{{ vehicle.energy }}"/>
+                                <label for="energy-{{ vehicle.energy }}">{{ vehicle.energy }}</label> <br>
+                            {% endfor %}
                         </div>
                     </div>
                     <div class="filter-choise">
                         <div class="filter-title">Modèle</div>
                         <div class="filter-wrapper">
-                            {% for model in models %}
-                                <input type="checkbox" name="brand" class="radio" id="model-{{ model.model }}"/>
-                                <label for="model-{{ model.model }}">{{ model.model }}</label> <br>
+                            {% for vehicle in models %}
+                                <input type="checkbox" name="models[]" class="radio" id="model-{{ vehicle.model }}"
+                                       value="{{ vehicle.model }}"/>
+                                <label for="model-{{ vehicle.model }}">{{ vehicle.model }}</label> <br>
                             {% endfor %}
                         </div>
                     </div>
@@ -88,12 +81,14 @@
                     <div class="filter-choise">
                         <div class="filter-title">Équipement</div>
                     </div>
-
+                    <div>
+                        <button type="submit" class="bg-sky-600 form-button">Show</button>
+                    </div>
                 </form>
             </div>
             <div class="view">
                 <div class="view__sort">
-                    <div class="view__sort-results"><span> {{ vehicles|length }}</span> résultats correspondant à votre
+                    <div class="view__sort-results"><span> {{ pagination.getTotalItemCount }}</span> résultats correspondant à votre
                         recherche
                     </div>
                     <div class="view__sort-sort">
@@ -106,48 +101,57 @@
                     </div>
                 </div>
                 <div class="view__cars grid grid-cols-3 gap-10">
-                    {% for car in vehicles %}
-                        <div class="car">
-                            <div class="car__picture"
-                                 style="background-image: url({{ car.pics[0] ?? '/image/clipart135547.png' }})"></div>
-                            <div class="car__info">
-                                <div class="car__info-left">
-                                    <div class="brand">{{ car.brand }}</div>
-                                    <div class="model">{{ car.model }}</div>
-                                    <div class="designation">{{ car.version }}</div>
-                                    <div class="year-fuel-hp">
-                                        <span class="year">{{ car.year }}</span> -
-                                        <span class="fuel">{{ car.energy }}</span> -
-                                        <span class="transmission">{{ car.gearbox }}</span> -
-                                        <span class="hp">{{ car.power }} hp</span>
-                                    </div>
-                                </div>
-                                <div class="car__info-right">
-                                    <div class="price-gross">{{ car.price ? "#{car.price} €" : '-' }}</div>
-                                    {% if car.priceRetail %}
-                                        <div class="flex justify-end">
-                                            <div class="price-official">
-                                                {{ car.priceRetail ? "#{car.priceRetail} €" : '' }}
-                                            </div>
-                                            <div class="price-discont">
-                                                {{ car.priceRetail ? "#{(((car.priceRetail - car.price) / car.priceRetail) * 100)|round} %" : '' }}
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <br/>
-                                    {% endif %}
+                    {% for key,car in pagination %}
+                        {% if key == 4 %}
+                            <div class="car">
+                                <img width="384" alt="Скриншот 2022-03-29 в 16 21 58" src="https://user-images.githubusercontent.com/34513693/160633732-4b9dbc32-656b-473d-86a5-4f0b26bae908.png" style="max-width: 100%;">
+                            </div>
+                        {% endif %}
+                            <div class="car">
 
-                                    <div class="per-month">
-                                        <span>Ou à partir de</span>
-                                        <div class="price-month">
-                                            {{ car.price ? "#{(car.price / (12*5))|round}€" : '-' }}
+                                <div class="car__picture"
+                                     style="background-image: url({{ car.pics[0] ?? '/image/clipart135547.png' }})"></div>
+                                <div class="car__info">
+                                    <div class="car__info-left">
+                                        <div class="brand">{{ car.brand }}</div>
+                                        <div class="model">{{ car.model }}</div>
+                                        <div class="designation">{{ car.version }}</div>
+                                        <div class="year-fuel-hp">
+                                            <span class="year">{{ car.year }}</span> -
+                                            <span class="fuel">{{ car.energy }}</span> -
+                                            <span class="transmission">{{ car.gearbox }}</span> -
+                                            <span class="hp">{{ car.power }} hp</span>
                                         </div>
-                                        <span>/mois</span>
+                                    </div>
+                                    <div class="car__info-right">
+                                        <div class="price-gross">{{ car.price ? "#{car.price} €" : '-' }}</div>
+                                        {% if car.priceRetail %}
+                                            <div class="flex justify-end">
+                                                <div class="price-official">
+                                                    {{ car.priceRetail ? "#{car.priceRetail} €" : '' }}
+                                                </div>
+                                                <div class="price-discont">
+                                                    {{ car.priceRetail ? "#{(((car.priceRetail - car.price) / car.priceRetail) * 100)|round} %" : '' }}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <br/>
+                                        {% endif %}
+
+                                        <div class="per-month">
+                                            <span>Ou à partir de</span>
+                                            <div class="price-month">
+                                                {{ car.price ? "#{(car.price / (12*5))|round}€" : '-' }}
+                                            </div>
+                                            <span>/mois</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     {% endfor %}
+                </div>
+                <div>
+                    {{ knp_pagination_render(pagination) }}
                 </div>
             </div>
 
