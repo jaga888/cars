@@ -45,32 +45,56 @@ class VehiclesRepository extends ServiceEntityRepository
         }
     }
 
-    // /**
-    //  * @return Vehicles[] Returns an array of Vehicles objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return Vehicles[] Returns an array of Vehicles objects
+     */
+    public function getModels()
     {
         return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('v.id', 'ASC')
-            ->setMaxResults(10)
+            ->select('v.model')
+            ->distinct()
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Vehicles
+    public function getBrands()
     {
         return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
+            ->select('v.brand')
+            ->distinct()
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
+
+    public function getMaxPrice()
+    {
+        return $this->createQueryBuilder('v')
+            ->select('MAX(v.price)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getMinPrice()
+    {
+        return $this->createQueryBuilder('v')
+            ->select('MIN(v.price)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getMaxPriceMonthly()
+    {
+        return $this->createQueryBuilder('v')
+            ->select('MAX(v.price_monthly)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getMinPriceMonthly()
+    {
+        return $this->createQueryBuilder('v')
+            ->select('MIN(v.price_monthly)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

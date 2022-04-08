@@ -60,7 +60,7 @@ class Vehicles
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $priceMonthly;
+    private $price_monthly;
 
     /**
      * @ORM\Column(type="simple_array", nullable=true)
@@ -175,12 +175,12 @@ class Vehicles
 
     public function getPriceMonthly(): ?int
     {
-        return $this->priceMonthly;
+        return $this->price_monthly;
     }
 
-    public function setPriceMonthly(?int $priceMonthly): self
+    public function setPriceMonthly(?int $price_monthly): self
     {
-        $this->priceMonthly = $priceMonthly;
+        $this->price_monthly = $price_monthly;
 
         return $this;
     }

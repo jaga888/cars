@@ -2,6 +2,156 @@
 
 {% block body %}
     <div class="flex w-full h-screen">
-        <p class="m-auto">Start here</p>
+        <div class="page-wrapper">
+            <div class="panel">
+                <h3 class="panel__title">FILTRER MA RECHERCHE</h3>
+                <form action="" method="post" id="add-filter" class="panel__form">
+                    <input type="hidden" id="max-price" value="{{ maxPrice }}">
+                    <input type="hidden" id="min-price" value="{{ minPrice }}">
+                    <input type="hidden" id="max-price-monthly" value="{{ maxPriceMonthly }}">
+                    <input type="hidden" id="min-price-monthly" value="{{ minPriceMonthly }}">
+                    <div class="checkbox-div filter-partir">
+                        <div class="checkbox-title">Prêt à partir</div>
+                        <input type="checkbox" id="pret-a-partir" class="checkbox" checked>
+                        <label for="pret-a-partir" class="label"></label>
+                    </div>
+                    <div class="checkbox-div filter-km">
+                        <div class="checkbox-title">Zéro km</div>
+                        <input type="checkbox" id="zero-km" class="checkbox" checked>
+                        <label for="zero-km" class="label"></label>
+                    </div>
+                    <div class="checkbox-div filter-promotions unactive">
+                        <div class="checkbox-title">Promotions</div>
+                        <input type="checkbox" id="promotions" class="checkbox">
+                        <label for="promotions" class="label"></label>
+                    </div>
+                    <div class="filter-budget">
+                        <div class="filter-title">Budget</div>
+                        <div class="filter-budget-choice">
+                            <div class="filter-budget-choice-total">Total</div>
+                            <div class="filter-budget-choice-mensuel">Mensuel</div>
+                        </div>
+                        <div class="filter-budget-range">
+                            <div id="price-slider"></div>
+                            <div id="price-monthly-slider" class="hidden"></div>
+                        </div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Marque</div>
+                        <div class="filter-wrapper">
+                            {% for brand in brands %}
+                                <input type="checkbox" name="brand" class="radio" id="brand-{{ brand.brand }}"/>
+                                <label for="brand-{{ brand.brand }}">{{ brand.brand }}</label> <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Type de véhicule</div>
+                        <div class="filter-wrapper">
+                            <input type="radio" class="radio" id="type-tous" checked/>
+                            <label for="type-tous">Tous</label> <br>
+                            <input type="radio" class="radio" id="type-citadine"/>
+                            <label for="type-citadine">Citadine</label> <br>
+                            <input type="radio" class="radio" id="type-berline"/>
+                            <label for="type-berline">Berline</label><br>
+                            <input type="radio" class="radio" id="type-break"/>
+                            <label for="type-break">Break</label><br>
+                            <input type="radio" class="radio" id="type-suv"/>
+                            <label for="type-suv">SUV / 4x4</label> <br>
+                            <input type="radio" class="radio" id="type-mono"/>
+                            <label for="type-mono">Monospace / Ludospace</label><br>
+                            <input type="radio" class="radio" id="type-coupe"/>
+                            <label for="type-coupe">Coupé / Cabriolet</label><br>
+                        </div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Modèle</div>
+                        <div class="filter-wrapper">
+                            {% for model in models %}
+                                <input type="checkbox" name="brand" class="radio" id="model-{{ model.model }}"/>
+                                <label for="model-{{ model.model }}">{{ model.model }}</label> <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Kilométrage</div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Année</div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Couleur</div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Motorisation</div>
+                    </div>
+                    <div class="filter-choise">
+                        <div class="filter-title">Équipement</div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="view">
+                <div class="view__sort">
+                    <div class="view__sort-results"><span> {{ vehicles|length }}</span> résultats correspondant à votre
+                        recherche
+                    </div>
+                    <div class="view__sort-sort">
+                        <label for="sort">Trier par </label>
+                        <select name="select" id="sort">
+                            <option id="sort-pertinence1" value="Pertinence">Pertinence</option>
+                            <option id="sort-pertinence2" value="Pertinence">Pertinence</option>
+                            <option id="sort-pertinence3" value="Pertinence">Pertinence</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="view__cars grid grid-cols-3 gap-10">
+                    {% for car in vehicles %}
+                        <div class="car">
+                            <div class="car__picture"
+                                 style="background-image: url({{ car.pics[0] ?? '/image/clipart135547.png' }})"></div>
+                            <div class="car__info">
+                                <div class="car__info-left">
+                                    <div class="brand">{{ car.brand }}</div>
+                                    <div class="model">{{ car.model }}</div>
+                                    <div class="designation">{{ car.version }}</div>
+                                    <div class="year-fuel-hp">
+                                        <span class="year">{{ car.year }}</span> -
+                                        <span class="fuel">{{ car.energy }}</span> -
+                                        <span class="transmission">{{ car.gearbox }}</span> -
+                                        <span class="hp">{{ car.power }} hp</span>
+                                    </div>
+                                </div>
+                                <div class="car__info-right">
+                                    <div class="price-gross">{{ car.price ? "#{car.price} €" : '-' }}</div>
+                                    {% if car.priceRetail %}
+                                        <div class="flex justify-end">
+                                            <div class="price-official">
+                                                {{ car.priceRetail ? "#{car.priceRetail} €" : '' }}
+                                            </div>
+                                            <div class="price-discont">
+                                                {{ car.priceRetail ? "#{(((car.priceRetail - car.price) / car.priceRetail) * 100)|round} %" : '' }}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <br/>
+                                    {% endif %}
+
+                                    <div class="per-month">
+                                        <span>Ou à partir de</span>
+                                        <div class="price-month">
+                                            {{ car.price ? "#{(car.price / (12*5))|round}€" : '-' }}
+                                        </div>
+                                        <span>/mois</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
     </div>
+
 {% endblock %}
